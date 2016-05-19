@@ -14,7 +14,7 @@ create_bins <- function(x, breaks) {
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
-#' @param method Method is the type of discretization approach used
+#' @param method Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans"
 #' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
 #' @return A vector containing the breaks
 #' @examples
@@ -64,12 +64,16 @@ get_control <- function(method="kmeans", control=NULL) {
   }
 }
 
-#' create kmeans breaks.
+#' Create kmeans breaks.
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param control Control is used for optional parameters for the method
 #' @importFrom stats kmeans aggregate
 #' @return A vector containing the breaks
+#' @seealso\code{\link{create_breaks}}
+#' @examples
+#' kmeans_breaks <- create_breaks(1:10)
+#' create_bins(1:10, kmeans_breaks)
 create_kmeansbreaks <- function(x, control=NULL) {
   model <- do.call(stats::kmeans, c(list(x=x), get_control("kmeans", control)))
   n_center <- get_control("kmeans", control)$centers
@@ -82,11 +86,15 @@ create_kmeansbreaks <- function(x, control=NULL) {
   return(sort(as.numeric(kmeans(minmax, centers=n_center-1)$centers)))
 }
 
-#' create breaks using mdlp
+#' Create breaks using mdlp
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
 #' @return A vector containing the breaks
+#' @seealso\code{\link{create_breaks}}
+#' @examples
+#' entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
+#' create_bins(1:10, entropy_breaks)
 create_mdlpbreaks <- function(x, y) {
   if (! requireNamespace("discretization", quietly = TRUE)) {
     stop("Please install discretization: install.packages('discretization')")
@@ -95,18 +103,21 @@ create_mdlpbreaks <- function(x, y) {
 }
 
 
-#' create breaks using mdlp
+#' Create breaks using mdlp
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
 #' @param control Control is used for optional parameters for the method
 #' @return A vector containing the breaks
+#' @seealso\code{\link{create_breaks}}
+#' @examples
+#' dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
+#' create_bins(iris$Sepal.Length, dt_breaks)
 create_dtbreaks <- function(x, y, control=NULL) {
   if (! requireNamespace("partykit", quietly = TRUE)) {
     stop("Please install partykit: install.packages('partykit')")
   }
 
-  #' based on the undocumented function in partykit package
   list.rules.party <- function(x, i = NULL, ...) {
     if (is.null(i)) i <- partykit::nodeids(x, terminal = TRUE)
     if (length(i) > 1) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/binst.R
 \name{create_mdlpbreaks}
 \alias{create_mdlpbreaks}
-\title{create breaks using mdlp}
+\title{Create breaks using mdlp}
 \usage{
 create_mdlpbreaks(x, y)
 }
@@ -15,6 +15,13 @@ create_mdlpbreaks(x, y)
 A vector containing the breaks
 }
 \description{
-create breaks using mdlp
+Create breaks using mdlp
+}
+\examples{
+entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
+create_bins(1:10, entropy_breaks)
+}
+\seealso{
+\code{\link{create_breaks}}
 }
 

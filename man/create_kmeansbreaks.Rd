@@ -2,7 +2,7 @@
 % Please edit documentation in R/binst.R
 \name{create_kmeansbreaks}
 \alias{create_kmeansbreaks}
-\title{create kmeans breaks.}
+\title{Create kmeans breaks.}
 \usage{
 create_kmeansbreaks(x, control = NULL)
 }
@@ -15,6 +15,13 @@ create_kmeansbreaks(x, control = NULL)
 A vector containing the breaks
 }
 \description{
-create kmeans breaks.
+Create kmeans breaks.
+}
+\examples{
+kmeans_breaks <- create_breaks(1:10)
+create_bins(1:10, kmeans_breaks)
+}
+\seealso{
+\code{\link{create_breaks}}
 }
 

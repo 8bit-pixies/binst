@@ -2,7 +2,7 @@
 % Please edit documentation in R/binst.R
 \name{create_dtbreaks}
 \alias{create_dtbreaks}
-\title{create breaks using mdlp}
+\title{Create breaks using mdlp}
 \usage{
 create_dtbreaks(x, y, control = NULL)
 }
@@ -15,10 +15,15 @@ create_dtbreaks(x, y, control = NULL)
 }
 \value{
 A vector containing the breaks
-based on the undocumented function in partykit package
-stolen from source code
 }
 \description{
-create breaks using mdlp
+Create breaks using mdlp
+}
+\examples{
+dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
+create_bins(iris$Sepal.Length, dt_breaks)
+}
+\seealso{
+\code{\link{create_breaks}}
 }
 

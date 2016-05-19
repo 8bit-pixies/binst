@@ -11,7 +11,7 @@ create_breaks(x, y = NULL, method = "kmeans", control = NULL)
 
 \item{y}{Y is the response vector used for calculating metrics for discretization}
 
-\item{method}{Method is the type of discretization approach used}
+\item{method}{Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans"}
 
 \item{control}{Control is used for optional parameters for the method. It is a list of optional parameters for the function}
 }

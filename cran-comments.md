@@ -1,5 +1,6 @@
 ## Resubmission
 
+* Title is now in title-case
 * Altered Title and Description to not
   start with "this package" or name of the 
   package
