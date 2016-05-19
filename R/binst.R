@@ -1,0 +1,167 @@
+#' Creates bins given breaks
+#'
+#' @param x X is a numeric vector which is to be discretized
+#' @param breaks Breaks are the breaks for the vector X to be broken at. This excludes endpoints
+#' @return A vector same length as X is returned with the numeric discretization
+#' @examples
+#' create_bins(1:10, c(3, 5))
+#' @export
+create_bins <- function(x, breaks) {
+  cut(x, c(-Inf, Inf, breaks), labels = FALSE)
+}
+
+#' A convenience functon for creating breaks with various methods.
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param y Y is the response vector used for calculating metrics for discretization
+#' @param method Method is the type of discretization approach used
+#' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
+#' @return A vector containing the breaks
+#' @examples
+#' kmeans_breaks <- create_breaks(1:10)
+#' create_bins(1:10, kmeans_breaks)
+#'
+#' entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
+#' create_bins(1:10, entropy_breaks)
+#'
+#' dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
+#' create_bins(iris$Sepal.Length, dt_breaks)
+#' @export
+create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
+  method <- tolower(method)
+  if (method == "kmeans") {
+    return(create_kmeansbreaks(x, control=control))
+  }
+  if (method %in% c("mdlp", "entropy")) {
+    return(create_mdlpbreaks(x, y))
+  }
+  if (method %in% c("decisiontrees", "dt", "ctrees")) {
+    return(create_dtbreaks(x, y, control=control))
+  }
+}
+
+#' gets the default parameters for each method.
+#'
+#' @param method Method is the type of discretization approach used
+#' @param control Control are the controls for the algorithm
+#' @return List of default parameters
+get_control <- function(method="kmeans", control=NULL) {
+  if (method=="kmeans"){
+    if (is.null(control)){
+      return(list(centers=3))
+    } else if ("centers" %in% names(control)){
+      return(control)
+    } else {
+      return(c(list(centers=3), control))
+    }
+  }
+  if (method=="dt"){
+    if (is.null(control)){
+      return(list())
+    } else {
+      return(control)
+    }
+  }
+}
+
+#' create kmeans breaks.
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param control Control is used for optional parameters for the method
+#' @return A vector containing the breaks
+create_kmeansbreaks <- function(x, control=NULL) {
+  model <- do.call(kmeans, c(list(x=x), get_control("kmeans", control)))
+  n_center <- get_control("kmeans", control)$centers
+  df <- data.frame(x=x, y=model$cluster)
+  minx <- aggregate(x~y, data =df, min)$x
+  maxx <- aggregate(x~y, data =df, max)$x
+  minmax <- unique(c(minx, maxx))
+  minmax <- minmax[minmax != min(minmax) & minmax != max(minmax)]
+  minmax <- sort(minmax)
+  return(sort(as.numeric(kmeans(minmax, centers=n_center-1)$centers)))
+}
+
+#' create breaks using mdlp
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param y Y is the response vector used for calculating metrics for discretization
+#' @return A vector containing the breaks
+create_mdlpbreaks <- function(x, y) {
+  if (! requireNamespace("discretization", quietly = TRUE)) {
+    stop("Please install discretization: install.packages('discretization')")
+  }
+  return(discretization::cutPoints(x,y))
+}
+
+
+#' create breaks using mdlp
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param y Y is the response vector used for calculating metrics for discretization
+#' @param control Control is used for optional parameters for the method
+#' @return A vector containing the breaks
+create_dtbreaks <- function(x, y, control=NULL) {
+  if (! requireNamespace("partykit", quietly = TRUE)) {
+    stop("Please install partykit: install.packages('partykit')")
+  }
+
+  #' based on the undocumented function in partykit package
+  list.rules.party <- function(x, i = NULL, ...) {
+    #' stolen from source code
+    if (is.null(i)) i <- partykit::nodeids(x, terminal = TRUE)
+    if (length(i) > 1) {
+      ret <- sapply(i, list.rules.party, x = x)
+      names(ret) <- if (is.character(i)) i else names(x)[i]
+      return(ret)
+    }
+    if (is.character(i) && !is.null(names(x)))
+      i <- which(names(x) %in% i)
+    stopifnot(length(i) == 1 & is.numeric(i))
+    stopifnot(i <= length(x) & i >= 1)
+    i <- as.integer(i)
+    dat <- partykit::data_party(x, i)
+    if (!is.null(x$fitted)) {
+      findx <- which("(fitted)" == names(dat))[1]
+      fit <- dat[,findx:ncol(dat), drop = FALSE]
+      dat <- dat[,-(findx:ncol(dat)), drop = FALSE]
+      if (ncol(dat) == 0)
+        dat <- x$data
+    } else {
+      fit <- NULL
+      dat <- x$data
+    }
+
+    rule <- c()
+
+    recFun <- function(node) {
+      if (partykit::id_node(node) == i) return(NULL)
+      kid <- sapply(partykit::kids_node(node), partykit::id_node)
+      whichkid <- max(which(kid <= i))
+      split <- partykit::split_node(node)
+      ivar <- partykit::varid_split(split)
+      svar <- names(dat)[ivar]
+      index <- partykit::index_split(split)
+      if (is.null(index)) index <- 1:length(kid)
+      breaks <- cbind(c(-Inf, partykit::breaks_split(split)),
+                      c(partykit::breaks_split(split), Inf))
+      sbreak <- breaks[index == whichkid,]
+      right <- partykit::right_split(split)
+      srule <- c()
+      if (is.finite(sbreak[1]))
+        srule <- c(srule, sbreak[1])
+      if (is.finite(sbreak[2]))
+        srule <- c(srule, sbreak[2])
+
+      rule <<- c(rule, srule)
+      return(recFun(node[[whichkid]]))
+    }
+    node <- recFun(partykit::node_party(x))
+    return(unlist(rule))
+  }
+
+  df <- data.frame(x=x, y=y)
+  build_tree <-do.call(partykit::ctree, c(list(formula=y~x, data=df), get_control("dt", control)))
+  breaks <- as.numeric(unique(unlist(list.rules.party(build_tree))))
+  return(breaks)
+
+}
