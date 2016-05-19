@@ -108,7 +108,6 @@ create_dtbreaks <- function(x, y, control=NULL) {
 
   #' based on the undocumented function in partykit package
   list.rules.party <- function(x, i = NULL, ...) {
-    #' stolen from source code
     if (is.null(i)) i <- partykit::nodeids(x, terminal = TRUE)
     if (length(i) > 1) {
       ret <- sapply(i, list.rules.party, x = x)

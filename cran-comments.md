@@ -1,8 +1,14 @@
+## Resubmission
+
+* Altered Title and Description to not
+  start with "this package" or name of the 
+  package
+
 ## Release Summary
 * Initial Release
 
 ## Test environments
-* local Windows 10 install, R 3.2.5
+* local Windows 10 install, R 3.3.0
 * ubuntu 12.04 (on travis-ci), R 3.3.0
 
 ## R CMD check results

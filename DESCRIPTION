@@ -1,13 +1,13 @@
 Package: binst
 Type: Package
-Title: A Package Binning Variables
+Title: Data preproprocesing, binning for classification and regression.
 Version: 0.1.0
 Date: 2016-05-19
 Author: Chapman Siu
 Maintainer: Chapman Siu <chpmn.siu@gmail.com>
-Description: binst or "bin stuff" is a package that contains various
-    tools for binning including using Entropy,
-    Recursive Partition methods and clustering.
+Description: Various supversed and unsupervised binning tools
+    including using entropy, recursive partition methods
+    and clustering.
 LazyData: TRUE
 Imports:
     stats
