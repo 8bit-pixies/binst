@@ -22,9 +22,13 @@ A vector containing the breaks
 A convenience functon for creating breaks with various methods.
 }
 \examples{
-library(binst)
-create_breaks(1:10)
-create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
-create_breaks(iris$Sepal.Length, iris$Species, method="dt")
+kmeans_breaks <- create_breaks(1:10)
+create_bins(1:10, kmeans_breaks)
+
+entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
+create_bins(1:10, entropy_breaks)
+
+dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
+create_bins(iris$Sepal.Length, dt_breaks)
 }
 

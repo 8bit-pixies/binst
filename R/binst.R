@@ -68,9 +68,10 @@ get_control <- function(method="kmeans", control=NULL) {
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param control Control is used for optional parameters for the method
+#' @importFrom stats kmeans aggregate
 #' @return A vector containing the breaks
 create_kmeansbreaks <- function(x, control=NULL) {
-  model <- do.call(kmeans, c(list(x=x), get_control("kmeans", control)))
+  model <- do.call(stats::kmeans, c(list(x=x), get_control("kmeans", control)))
   n_center <- get_control("kmeans", control)$centers
   df <- data.frame(x=x, y=model$cluster)
   minx <- aggregate(x~y, data =df, min)$x

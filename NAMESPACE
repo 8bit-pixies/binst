@@ -2,3 +2,5 @@
 
 export(create_bins)
 export(create_breaks)
+importFrom(stats,aggregate)
+importFrom(stats,kmeans)
