@@ -86,7 +86,8 @@ create_kmeansbreaks <- function(x, control=NULL) {
   return(sort(as.numeric(kmeans(minmax, centers=n_center-1)$centers)))
 }
 
-#' Create breaks using mdlp
+#' Create breaks using Minimum Description Length Principle(MDLP) or entropy based
+#' discretization.
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
@@ -103,7 +104,7 @@ create_mdlpbreaks <- function(x, y) {
 }
 
 
-#' Create breaks using mdlp
+#' Create breaks using recursive partitioning (decision trees).
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
