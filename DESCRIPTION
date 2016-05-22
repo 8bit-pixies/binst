@@ -15,7 +15,8 @@ Suggests:
     discretization,
     partykit,
     Formula,
-    testthat
+    testthat,
+    BAMMtools
 RoxygenNote: 5.0.1
 License: MIT + file LICENSE
 URL: https://github.com/chappers/binst

@@ -14,7 +14,7 @@ create_bins <- function(x, breaks) {
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
-#' @param method Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans"
+#' @param method Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans", "jenks"
 #' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
 #' @return A vector containing the breaks
 #' @examples
@@ -38,6 +38,9 @@ create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
   if (method %in% c("decisiontrees", "dt", "ctrees")) {
     return(create_dtbreaks(x, y, control=control))
   }
+  if (method == "jenks") {
+    return(create_jenksbreaks(x, control=control))
+  }
 }
 
 #' gets the default parameters for each method.
@@ -53,6 +56,15 @@ get_control <- function(method="kmeans", control=NULL) {
       return(control)
     } else {
       return(c(list(centers=3), control))
+    }
+  }
+  if (method=="jenks"){
+    if (is.null(control)){
+      return(list(k=3))
+    } else if ("k" %in% names(control)){
+      return(control)
+    } else {
+      return(c(list(k=3), control))
     }
   }
   if (method=="dt"){
@@ -85,6 +97,30 @@ create_kmeansbreaks <- function(x, control=NULL) {
   minmax <- sort(minmax)
   return(sort(as.numeric(kmeans(minmax, centers=n_center-1)$centers)))
 }
+
+#' Create Jenks breaks
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param control Control is used for optional parameters for the method
+#' @return A vector containing the breaks
+#' @seealso\code{\link{create_breaks}}
+#' @examples
+#' jenks_breaks <- create_jenksbreaks(1:10)
+#' create_bins(1:10, jenks_breaks)
+create_jenksbreaks <- function(x, control=NULL) {
+  if (! requireNamespace("BAMMtools", quietly = TRUE)) {
+    stop("Please install BAMMtools: install.packages('BAMMtools')")
+  }
+  k <- get_control("jenks", control)$k
+  breaks <- do.call(BAMMtools::getJenksBreaks, c(list(var=x), k+2))
+
+  if (length(breaks) <= k){
+    return(breaks)
+  } else {
+    return(breaks[breaks != min(breaks) & breaks != max(breaks)])
+  }
+}
+
 
 #' Create breaks using mdlp
 #'
