@@ -105,7 +105,7 @@ create_kmeansbreaks <- function(x, control=NULL) {
 #' @return A vector containing the breaks
 #' @seealso\code{\link{create_breaks}}
 #' @examples
-#' jenks_breaks <- create_jenksbreaks(1:10)
+#' jenks_breaks <- create_breaks(1:10, method="jenks")
 #' create_bins(1:10, jenks_breaks)
 create_jenksbreaks <- function(x, control=NULL) {
   if (! requireNamespace("BAMMtools", quietly = TRUE)) {

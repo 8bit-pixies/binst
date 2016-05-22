@@ -18,7 +18,7 @@ A vector containing the breaks
 Create Jenks breaks
 }
 \examples{
-jenks_breaks <- create_jenksbreaks(1:10)
+jenks_breaks <- create_breaks(1:10, method="jenks")
 create_bins(1:10, jenks_breaks)
 }
 \seealso{
