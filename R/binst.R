@@ -17,8 +17,13 @@ create_bins <- function(x, breaks) {
 #' @param method Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans", "jenks"
 #' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
 #' @return A vector containing the breaks
+#' @seealso\code{\link{get_control}}
 #' @examples
 #' kmeans_breaks <- create_breaks(1:10)
+#' create_bins(1:10, kmeans_breaks)
+#'
+#' # passing the k means parameter "centers" = 4
+#' kmeans_breaks <- create_breaks(1:10, list(centers=4))
 #' create_bins(1:10, kmeans_breaks)
 #'
 #' entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
@@ -47,6 +52,7 @@ create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
 #'
 #' @param method Method is the type of discretization approach used
 #' @param control Control are the controls for the algorithm
+#' @export
 #' @return List of default parameters
 get_control <- function(method="kmeans", control=NULL) {
   if (method=="kmeans"){
@@ -86,6 +92,7 @@ get_control <- function(method="kmeans", control=NULL) {
 #' @examples
 #' kmeans_breaks <- create_breaks(1:10)
 #' create_bins(1:10, kmeans_breaks)
+#' @export
 create_kmeansbreaks <- function(x, control=NULL) {
   model <- do.call(stats::kmeans, c(list(x=x), get_control("kmeans", control)))
   n_center <- get_control("kmeans", control)$centers
@@ -107,6 +114,7 @@ create_kmeansbreaks <- function(x, control=NULL) {
 #' @examples
 #' jenks_breaks <- create_breaks(1:10, method="jenks")
 #' create_bins(1:10, jenks_breaks)
+#' @export
 create_jenksbreaks <- function(x, control=NULL) {
   if (! requireNamespace("BAMMtools", quietly = TRUE)) {
     stop("Please install BAMMtools: install.packages('BAMMtools')")
@@ -131,6 +139,7 @@ create_jenksbreaks <- function(x, control=NULL) {
 #' @examples
 #' entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
 #' create_bins(1:10, entropy_breaks)
+#' @export
 create_mdlpbreaks <- function(x, y) {
   if (! requireNamespace("discretization", quietly = TRUE)) {
     stop("Please install discretization: install.packages('discretization')")
@@ -149,6 +158,7 @@ create_mdlpbreaks <- function(x, y) {
 #' @examples
 #' dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
 #' create_bins(iris$Sepal.Length, dt_breaks)
+#' @export
 create_dtbreaks <- function(x, y, control=NULL) {
   if (! requireNamespace("partykit", quietly = TRUE)) {
     stop("Please install partykit: install.packages('partykit')")
