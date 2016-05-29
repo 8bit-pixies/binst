@@ -35,3 +35,4 @@ vignettes/*.pdf
 
 # Python stuff
 .spyder*
+__pycache__*

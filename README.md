@@ -1,9 +1,9 @@
 binst: a simple library for discretization
 ==========================================
 
-[![Travis-CI Build Status](https://travis-ci.org/chappers/binst.svg?branch=master)](https://travis-ci.org/chappers/binst)
+[![Travis-CI Build Status](https://travis-ci.org/Jules-and-Dave/binst.svg?branch=master)](https://travis-ci.org/Jules-and-Dave/binst)
 
-binst is a simple library which incorporates different ways to discretize variables in your data. 
+binst is a simple library which incorporates different ways to discretize variables in your data.
 
 Installation
 ============
