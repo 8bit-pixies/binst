@@ -1,5 +1,44 @@
-# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
-
-language: R
 sudo: false
-cache: packages
+
+matrix:
+  include:
+
+  - os: linux
+    language: python
+    python: 2.7
+    before_install:
+    - cd python
+    # command to install dependencies
+    install: "pip install -r requirements.txt"
+    # command to run tests
+    script: nosetests
+    env: TRAVIS_LANG=python
+
+  - os: linux
+    language: python
+    python: 3.4
+    before_install:
+    - cd python
+    # command to install dependencies
+    install: "pip install -r requirements.txt"
+    # command to run tests
+    script: nosetests
+    env: TRAVIS_LANG=python
+
+  - os: linux
+    language: python
+    python: 3.5
+    before_install:
+    - cd python
+    # command to install dependencies
+    install: "pip install -r requirements.txt"
+    # command to run tests
+    script: nosetests
+    env: TRAVIS_LANG=python
+
+  - os: linux
+    language: r
+    cache: packages
+    before_install:
+    - cd R
+    env: TRAVIS_LANG=R
