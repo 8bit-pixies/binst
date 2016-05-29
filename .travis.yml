@@ -12,7 +12,7 @@ matrix:
     install: 
     - pip install -r requirements.txt
     # command to run tests
-    script: nosetest 
+    script: nosetests --with-coverage 
     env: TRAVIS_LANG=python
 
   - os: linux
@@ -24,7 +24,7 @@ matrix:
     install: 
     - pip install -r requirements.txt
     # command to run tests
-    script: nosetest 
+    script: nosetests --with-coverage 
     env: TRAVIS_LANG=python
 
   - os: linux
@@ -36,7 +36,7 @@ matrix:
     install: 
     - pip install -r requirements.txt
     # command to run tests
-    script: nosetest 
+    script: nosetests --with-coverage 
     env: TRAVIS_LANG=python
 
   - os: linux
