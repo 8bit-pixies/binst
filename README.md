@@ -15,7 +15,7 @@ Install from CRAN:
 Install the development version from github:
 
     # install.packages("devtools")
-    devtools::install_github("chappers/binst")
+    devtools::install_github("jules-and-dave/binst")
 
 
 License and Copyrights
