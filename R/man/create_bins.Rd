@@ -4,12 +4,14 @@
 \alias{create_bins}
 \title{Creates bins given breaks}
 \usage{
-create_bins(x, breaks)
+create_bins(x, breaks, method = "cuts")
 }
 \arguments{
 \item{x}{X is a numeric vector which is to be discretized}
 
 \item{breaks}{Breaks are the breaks for the vector X to be broken at. This excludes endpoints}
+
+\item{method}{the approach to bin the variable, can either be cuts or hinge.}
 }
 \value{
 A vector same length as X is returned with the numeric discretization
@@ -19,5 +21,8 @@ Creates bins given breaks
 }
 \examples{
 create_bins(1:10, c(3, 5))
+}
+\seealso{
+\code{\link{create_breaks}}
 }
 

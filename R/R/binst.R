@@ -2,13 +2,25 @@
 #'
 #' @param x X is a numeric vector which is to be discretized
 #' @param breaks Breaks are the breaks for the vector X to be broken at. This excludes endpoints
+#' @param method the approach to bin the variable, can either be cuts or hinge.
 #' @return A vector same length as X is returned with the numeric discretization
 #' @seealso\code{\link{create_breaks}}
 #' @examples
 #' create_bins(1:10, c(3, 5))
 #' @export
-create_bins <- function(x, breaks) {
-  cut(x, c(-Inf, Inf, breaks), labels = FALSE)
+create_bins <- function(x, breaks, method="cuts") {
+  if (method=="hinge") {
+    hingebins <- Reduce(cbind, lapply(breaks, function(bk) {
+      cbind(pmax(0, x-bk), pmax(0, bk-x))
+    }))
+    colnames(hingebins) <- colnames(hingebins, do.NULL=FALSE)
+    return(hingebins)
+  } else if (method=="cuts") {
+    return(cut(x, c(-Inf, Inf, breaks), labels = FALSE))
+  } else {
+    warning("Invalid method found, please choose either \"cuts\" or \"hinge\". Defaulting to \"cuts\".")
+    return(cut(x, c(-Inf, Inf, breaks), labels = FALSE))
+  }
 }
 
 #' A convenience functon for creating breaks with various methods.
@@ -19,6 +31,7 @@ create_bins <- function(x, breaks) {
 #' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
 #' @return A vector containing the breaks
 #' @seealso \code{\link{get_control}}, \code{\link{create_bins}}
+#' @importFrom stats complete.cases
 #' @examples
 #' kmeans_breaks <- create_breaks(1:10)
 #' create_bins(1:10, kmeans_breaks)
@@ -34,6 +47,21 @@ create_bins <- function(x, breaks) {
 #' create_bins(iris$Sepal.Length, dt_breaks)
 #' @export
 create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
+  if (!is.null(y)){
+    complete <- complete.cases(x) & complete.cases(y)
+    if (!all(complete)){
+      warning("x or y vector contains NA. These observations will be automatically removed.")
+      x <- x[complete]
+      y <- y[complete]
+    }
+  } else {
+    complete <- complete.cases(x)
+    if (!all(complete)) {
+      warning("x vector contains NA. These observations will be automatically removed.")
+      x <- x[complete]
+    }
+  }
+
   method <- tolower(method)
   if (method == "kmeans") {
     return(create_kmeansbreaks(x, control=control))
