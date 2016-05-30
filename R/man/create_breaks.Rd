@@ -36,6 +36,6 @@ dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
 create_bins(iris$Sepal.Length, dt_breaks)
 }
 \seealso{
-\code{\link{get_control}}
+\code{\link{get_control}}, \code{\link{create_bins}}
 }
 
