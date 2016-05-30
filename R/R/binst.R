@@ -75,6 +75,9 @@ create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
   if (method == "jenks") {
     return(create_jenksbreaks(x, control=control))
   }
+  if (method %in% c("earth", "mars")) {
+    return(create_earthbreaks(x, y, control=control))
+  }
 }
 
 #' gets the default parameters for each method.
@@ -103,6 +106,13 @@ get_control <- function(method="kmeans", control=NULL) {
     }
   }
   if (method=="dt"){
+    if (is.null(control)){
+      return(list())
+    } else {
+      return(control)
+    }
+  }
+  if (method=="earth") {
     if (is.null(control)){
       return(list())
     } else {
@@ -145,17 +155,17 @@ create_kmeansbreaks <- function(x, control=NULL) {
 #' create_bins(1:10, jenks_breaks)
 #' @export
 create_jenksbreaks <- function(x, control=NULL) {
-  if (! requireNamespace("BAMMtools", quietly = TRUE)) {
+  if (! requireNamespace("BAMMtools", quietly = TRUE)) { # nocov start
     stop("Please install BAMMtools: install.packages('BAMMtools')")
-  }
+  } # nocov end
   k <- get_control("jenks", control)$k
   breaks <- do.call(BAMMtools::getJenksBreaks, c(list(var=x), k+2))
 
-  if (length(breaks) <= k){
+  if (length(breaks) <= k){ # nocov start
     return(breaks)
   } else {
     return(breaks[breaks != min(breaks) & breaks != max(breaks)])
-  }
+  } # nocov end
 }
 
 
@@ -170,14 +180,32 @@ create_jenksbreaks <- function(x, control=NULL) {
 #' create_bins(1:10, entropy_breaks)
 #' @export
 create_mdlpbreaks <- function(x, y) {
-  if (! requireNamespace("discretization", quietly = TRUE)) {
+  if (! requireNamespace("discretization", quietly = TRUE)) { # nocov start
     stop("Please install discretization: install.packages('discretization')")
-  }
+  } # nocov end
   return(discretization::cutPoints(x,y))
 }
 
+#' Create breaks using earth (i.e. MARS)
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param y Y is the response vector used for calculating metrics for discretization
+#' @return A vector containing the breaks
+#' @seealso\code{\link{create_breaks}}
+#' @examples
+#' earth_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="earth")
+#' create_bins(1:10, earth_breaks)
+#' @export
+create_earthbreaks <- function(x, y, control=NULL) {
+  if (! requireNamespace("earth", quietly = TRUE)) { # nocov start
+    stop("Please install earth: install.packages('earth')")
+  } # nocov end
+  earth_model <- do.call(earth::earth, c(list(x=x, y=y), get_control("earth", control)))$cut
+  return(unique(earth_model[!(rownames(earth_model) %in% c("(Intercept)"))]))
+}
 
-#' Create breaks using mdlp
+
+#' Create breaks using decision trees (recursive partitioning)
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
@@ -188,12 +216,12 @@ create_mdlpbreaks <- function(x, y) {
 #' dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
 #' create_bins(iris$Sepal.Length, dt_breaks)
 #' @export
-create_dtbreaks <- function(x, y, control=NULL) {
+create_dtbreaks <- function(x, y, control=NULL) { # nocov start
   if (! requireNamespace("partykit", quietly = TRUE)) {
     stop("Please install partykit: install.packages('partykit')")
-  }
+  } # nocov end
 
-  list.rules.party <- function(x, i = NULL, ...) {
+  list.rules.party <- function(x, i = NULL, ...) { # nocov start
     if (is.null(i)) i <- partykit::nodeids(x, terminal = TRUE)
     if (length(i) > 1) {
       ret <- sapply(i, list.rules.party, x = x)
@@ -243,7 +271,7 @@ create_dtbreaks <- function(x, y, control=NULL) {
     }
     node <- recFun(partykit::node_party(x))
     return(unlist(rule))
-  }
+  } # nocov end
 
   df <- data.frame(x=x, y=y)
   build_tree <-do.call(partykit::ctree, c(list(formula=y~x, data=df), get_control("dt", control)))

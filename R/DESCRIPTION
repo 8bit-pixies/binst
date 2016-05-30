@@ -16,7 +16,8 @@ Suggests:
     partykit,
     Formula,
     testthat,
-    BAMMtools
+    BAMMtools,
+    earth
 RoxygenNote: 5.0.1
 License: MIT + file LICENSE
 URL: https://github.com/jules-and-dave/binst
