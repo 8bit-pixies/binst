@@ -11,3 +11,10 @@ test_that("kmeans control parameters are correctly passed", {
   breaks_kmeans <- create_breaks(1:10, control=list(centers=4))
   expect_length(breaks_kmeans, 3)
 })
+
+test_that("kmeans control parameters with alternative algorithm can be used", {
+  breaks_kmeans <- create_breaks(1:10, control=list(algorithm='Forgy'))
+  expect_length(breaks_kmeans, 2)
+})
+
+
