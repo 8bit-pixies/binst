@@ -10,6 +10,9 @@ binst is a simple library which incorporates different ways to discretize variab
 Installation
 ============
 
+R
+-
+
 Install from CRAN:
 
     install.packages("binst")
@@ -17,7 +20,12 @@ Install from CRAN:
 Install the development version from github:
 
     # install.packages("devtools")
-    devtools::install_github("jules-and-dave/binst")
+    devtools::install_github("jules-and-dave/binst/R")
+    
+Python
+------
+
+TBA
 
 
 License and Copyrights
