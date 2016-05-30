@@ -3,6 +3,7 @@
 #' @param x X is a numeric vector which is to be discretized
 #' @param breaks Breaks are the breaks for the vector X to be broken at. This excludes endpoints
 #' @return A vector same length as X is returned with the numeric discretization
+#' @seealso\code{\link{create_breaks}}
 #' @examples
 #' create_bins(1:10, c(3, 5))
 #' @export
@@ -17,7 +18,7 @@ create_bins <- function(x, breaks) {
 #' @param method Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans", "jenks"
 #' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
 #' @return A vector containing the breaks
-#' @seealso\code{\link{get_control}}
+#' @seealso \code{\link{get_control}}, \code{\link{create_bins}}
 #' @examples
 #' kmeans_breaks <- create_breaks(1:10)
 #' create_bins(1:10, kmeans_breaks)

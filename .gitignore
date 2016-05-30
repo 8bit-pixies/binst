@@ -36,3 +36,4 @@ vignettes/*.pdf
 # Python stuff
 .spyder*
 __pycache__*
+.Rproj.user
