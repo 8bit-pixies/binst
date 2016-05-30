@@ -75,6 +75,9 @@ create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
   if (method == "jenks") {
     return(create_jenksbreaks(x, control=control))
   }
+  if (method %in% c("earth", "mars")) {
+    return(create_earthbreaks(x, y))
+  }
 }
 
 #' gets the default parameters for each method.
@@ -169,12 +172,31 @@ create_jenksbreaks <- function(x, control=NULL) {
 #' entropy_breaks <- create_breaks(1:10, rep(c(1,2), each = 5), method="entropy")
 #' create_bins(1:10, entropy_breaks)
 #' @export
-create_mdlpbreaks <- function(x, y) {
+create_mdlpbreaks <- function(x, y, ...) {
   if (! requireNamespace("discretization", quietly = TRUE)) {
     stop("Please install discretization: install.packages('discretization')")
   }
   return(discretization::cutPoints(x,y))
 }
+
+#' Create breaks using earth (i.e. MARS)
+#'
+#' @param x X is a numeric vector to be discretized
+#' @param y Y is the response vector used for calculating metrics for discretization
+#' @return A vector containing the breaks
+#' @seealso\code{\link{create_breaks}}
+#' @examples
+#' earth_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="earth")
+#' create_bins(1:10, earth_breaks)
+#' @export
+create_earthbreaks <- function(x, y) {
+  if (! requireNamespace("earth", quietly = TRUE)) {
+    stop("Please install earth: install.packages('earth')")
+  }
+  earth_model <- earth::earth(x=x, y=y)$cuts
+  return(unique(earth_model[!(rownames(earth_model) %in% c("(Intercept)"))]))
+}
+
 
 
 #' Create breaks using mdlp
