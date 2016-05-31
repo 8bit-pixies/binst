@@ -21,11 +21,13 @@ Install the development version from github:
 
     # install.packages("devtools")
     devtools::install_github("jules-and-dave/binst/R")
-    
+
 Python
 ------
 
-TBA
+Install from sources:
+
+    python setup.py install
 
 
 License and Copyrights
