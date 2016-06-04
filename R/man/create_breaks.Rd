@@ -4,7 +4,7 @@
 \alias{create_breaks}
 \title{A convenience functon for creating breaks with various methods.}
 \usage{
-create_breaks(x, y = NULL, method = "kmeans", control = NULL)
+create_breaks(x, y = NULL, method = "kmeans", control = NULL, ...)
 }
 \arguments{
 \item{x}{X is a numeric vector to be discretized}
@@ -14,6 +14,8 @@ create_breaks(x, y = NULL, method = "kmeans", control = NULL)
 \item{method}{Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans", "jenks"}
 
 \item{control}{Control is used for optional parameters for the method. It is a list of optional parameters for the function}
+
+\item{...}{instead of passing a list into control, arguments can be parsed as is.}
 }
 \value{
 A vector containing the breaks

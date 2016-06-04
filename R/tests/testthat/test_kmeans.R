@@ -10,6 +10,8 @@ test_that("kmeans breaks are close enough", {
 test_that("kmeans control parameters are correctly passed", {
   breaks_kmeans <- create_breaks(1:10, control=list(centers=4))
   expect_length(breaks_kmeans, 3)
+  breaks_kmeans <- create_breaks(1:10, centers=4)
+  expect_length(breaks_kmeans, 3)
 })
 
 test_that("kmeans control parameters with alternative algorithm can be used", {

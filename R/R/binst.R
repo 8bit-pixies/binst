@@ -29,6 +29,7 @@ create_bins <- function(x, breaks, method="cuts") {
 #' @param y Y is the response vector used for calculating metrics for discretization
 #' @param method Method is the type of discretization approach used. Possible methods are: "dt", "entropy", "kmeans", "jenks"
 #' @param control Control is used for optional parameters for the method. It is a list of optional parameters for the function
+#' @param ... instead of passing a list into control, arguments can be parsed as is.
 #' @return A vector containing the breaks
 #' @seealso \code{\link{get_control}}, \code{\link{create_bins}}
 #' @importFrom stats complete.cases
@@ -46,7 +47,7 @@ create_bins <- function(x, breaks, method="cuts") {
 #' dt_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="dt")
 #' create_bins(iris$Sepal.Length, dt_breaks)
 #' @export
-create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
+create_breaks <- function(x, y=NULL, method="kmeans", control=NULL, ...) {
   if (!is.null(y)){
     complete <- complete.cases(x) & complete.cases(y)
     if (!all(complete)){
@@ -62,6 +63,7 @@ create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
     }
   }
 
+  control <- c(control, list(...))
   method <- tolower(method)
   if (method == "kmeans") {
     return(create_kmeansbreaks(x, control=control))
@@ -88,7 +90,7 @@ create_breaks <- function(x, y=NULL, method="kmeans", control=NULL) {
 #' @return List of default parameters
 get_control <- function(method="kmeans", control=NULL) {
   if (method=="kmeans"){
-    if (is.null(control)){
+    if (class(control)=="list" & length(control) == 0){
       return(list(centers=3))
     } else if ("centers" %in% names(control)){
       return(control)
@@ -97,7 +99,7 @@ get_control <- function(method="kmeans", control=NULL) {
     }
   }
   if (method=="jenks"){
-    if (is.null(control)){
+    if (class(control)=="list" & length(control) == 0){
       return(list(k=3))
     } else if ("k" %in% names(control)){
       return(control)
@@ -106,14 +108,14 @@ get_control <- function(method="kmeans", control=NULL) {
     }
   }
   if (method=="dt"){
-    if (is.null(control)){
+    if (class(control)=="list" & length(control) == 0){
       return(list())
     } else {
       return(control)
     }
   }
   if (method=="earth") {
-    if (is.null(control)){
+    if (class(control)=="list" & length(control) == 0){
       return(list())
     } else {
       return(control)
@@ -190,11 +192,12 @@ create_mdlpbreaks <- function(x, y) {
 #'
 #' @param x X is a numeric vector to be discretized
 #' @param y Y is the response vector used for calculating metrics for discretization
+#' @param control Control is used for optional parameters for the method
 #' @return A vector containing the breaks
 #' @seealso\code{\link{create_breaks}}
 #' @examples
-#' earth_breaks <- create_breaks(iris$Sepal.Length, iris$Species, method="earth")
-#' create_bins(1:10, earth_breaks)
+#' earth_breaks <- create_breaks(x=iris$Sepal.Length, y=iris$Sepal.Width, method="earth")
+#' create_bins(iris$Sepal.Length, earth_breaks)
 #' @export
 create_earthbreaks <- function(x, y, control=NULL) {
   if (! requireNamespace("earth", quietly = TRUE)) { # nocov start
