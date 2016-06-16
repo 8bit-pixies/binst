@@ -1,12 +1,5 @@
-## Resubmission
-
-* Title is now in title-case
-* Altered Title and Description to not
-  start with "this package" or name of the 
-  package
-
 ## Release Summary
-* Initial Release
+* Version 0.2.0
 
 ## Test environments
 * local Windows 10 install, R 3.3.0
