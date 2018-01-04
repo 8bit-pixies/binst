@@ -220,65 +220,8 @@ create_earthbreaks <- function(x, y, control=NULL) {
 #' create_bins(iris$Sepal.Length, dt_breaks)
 #' @export
 create_dtbreaks <- function(x, y, control=NULL) { # nocov start
-  if (! requireNamespace("partykit", quietly = TRUE)) {
-    stop("Please install partykit: install.packages('partykit')")
-  } # nocov end
-
-  list.rules.party <- function(x, i = NULL, ...) { # nocov start
-    if (is.null(i)) i <- partykit::nodeids(x, terminal = TRUE)
-    if (length(i) > 1) {
-      ret <- sapply(i, list.rules.party, x = x)
-      names(ret) <- if (is.character(i)) i else names(x)[i]
-      return(ret)
-    }
-    if (is.character(i) && !is.null(names(x)))
-      i <- which(names(x) %in% i)
-    stopifnot(length(i) == 1 & is.numeric(i))
-    stopifnot(i <= length(x) & i >= 1)
-    i <- as.integer(i)
-    dat <- partykit::data_party(x, i)
-    if (!is.null(x$fitted)) {
-      findx <- which("(fitted)" == names(dat))[1]
-      fit <- dat[,findx:ncol(dat), drop = FALSE]
-      dat <- dat[,-(findx:ncol(dat)), drop = FALSE]
-      if (ncol(dat) == 0)
-        dat <- x$data
-    } else {
-      fit <- NULL
-      dat <- x$data
-    }
-
-    rule <- c()
-
-    recFun <- function(node) {
-      if (partykit::id_node(node) == i) return(NULL)
-      kid <- sapply(partykit::kids_node(node), partykit::id_node)
-      whichkid <- max(which(kid <= i))
-      split <- partykit::split_node(node)
-      ivar <- partykit::varid_split(split)
-      svar <- names(dat)[ivar]
-      index <- partykit::index_split(split)
-      if (is.null(index)) index <- 1:length(kid)
-      breaks <- cbind(c(-Inf, partykit::breaks_split(split)),
-                      c(partykit::breaks_split(split), Inf))
-      sbreak <- breaks[index == whichkid,]
-      right <- partykit::right_split(split)
-      srule <- c()
-      if (is.finite(sbreak[1]))
-        srule <- c(srule, sbreak[1])
-      if (is.finite(sbreak[2]))
-        srule <- c(srule, sbreak[2])
-
-      rule <<- c(rule, srule)
-      return(recFun(node[[whichkid]]))
-    }
-    node <- recFun(partykit::node_party(x))
-    return(unlist(rule))
-  } # nocov end
-
   df <- data.frame(x=x, y=y)
-  build_tree <-do.call(partykit::ctree, c(list(formula=y~x, data=df), get_control("dt", control)))
-  breaks <- as.numeric(unique(unlist(list.rules.party(build_tree))))
+  build_tree <-do.call(rpart::rpart, c(list(formula=y~x, data=df), get_control("dt", control)))
+  breaks <- as.numeric(unique(build_tree$splits[, "index"]))
   return(breaks)
-
 }
