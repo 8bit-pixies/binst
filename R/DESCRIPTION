@@ -13,7 +13,6 @@ Imports:
     stats
 Suggests:
     discretization,
-    partykit,
     Formula,
     testthat,
     BAMMtools,
