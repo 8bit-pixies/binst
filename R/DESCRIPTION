@@ -1,8 +1,8 @@
 Package: binst
 Type: Package
 Title: Data Preprocessing, Binning for Classification and Regression
-Version: 0.2.0
-Date: 2016-05-19
+Version: 0.2.1
+Date: 2018-01-05
 Author: Chapman Siu
 Maintainer: Chapman Siu <chpmn.siu@gmail.com>
 Description: Various supervised and unsupervised binning tools
@@ -10,7 +10,8 @@ Description: Various supervised and unsupervised binning tools
     and clustering.
 LazyData: TRUE
 Imports:
-    stats
+    stats,
+    rpart
 Suggests:
     discretization,
     Formula,
